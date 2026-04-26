@@ -1,8 +1,8 @@
 package com.AxeApps.TabExpand.core;
 
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
-
 import java.util.Map;
+
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
 @IFMLLoadingPlugin.Name("TabExpandCore")
 @IFMLLoadingPlugin.MCVersion("1.7.10")
