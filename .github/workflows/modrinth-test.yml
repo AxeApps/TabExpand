@@ -33,7 +33,9 @@ jobs:
 
       # 2. Verifica tamanho (sem expor conteúdo)
       - name: Check token length
-        run: echo "Length: ${#MODRINTH_TOKEN}"
+        run: |
+          LEN=$(printf %s "$MODRINTH_TOKEN" | wc -c)
+          echo "Length: $LEN"
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
 
