@@ -1,0 +1,62 @@
+name: Debug Modrinth Token
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  debug-token:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # 1. Verifica se o token existe
+      - name: Check MODRINTH_TOKEN presence
+        run: |
+          if [ -z "$MODRINTH_TOKEN" ]; then
+            echo "Token NÃO está definido"
+            exit 1
+          else
+            echo "Token definido"
+          fi
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+
+      # 2. Verifica tamanho (sem expor conteúdo)
+      - name: Check token length
+        run: echo "Length: ${#MODRINTH_TOKEN}"
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+
+      # 3. Valida token via API
+      - name: Validate Modrinth token
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: $MODRINTH_TOKEN" \
+            https://api.modrinth.com/v2/user)
+
+          echo "HTTP Status: $STATUS"
+
+          if [ "$STATUS" != "200" ]; then
+            echo "Token inválido ou não está sendo passado"
+            exit 1
+          fi
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+
+      # 4. Teste dentro do Gradle (mesmo contexto do erro)
+      - name: Test Gradle access to token
+        run: |
+          ./gradlew tasks --no-daemon
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          MODRINTH_API_KEY: ${{ secrets.MODRINTH_TOKEN }}
