@@ -55,6 +55,9 @@ jobs:
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       # 4. Teste dentro do Gradle (mesmo contexto do erro)
       - name: Test Gradle access to token
         run: |
